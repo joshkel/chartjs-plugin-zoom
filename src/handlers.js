@@ -150,7 +150,7 @@ export function wheel(chart, event) {
   }
 
   const rect = event.target.getBoundingClientRect();
-  const speed = 1 + (event.deltaY >= 0 ? -zoomOptions.wheel.speed : zoomOptions.wheel.speed);
+  const speed = event.deltaY >= 0 ? 2 - 1 / (1 - zoomOptions.wheel.speed) : 1 + zoomOptions.wheel.speed;
   const amount = {
     x: speed,
     y: speed,
