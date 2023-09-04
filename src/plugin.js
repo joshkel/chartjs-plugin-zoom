@@ -1,3 +1,4 @@
+import {each} from 'chart.js/helpers';
 import Hammer from 'hammerjs';
 import {addListeners, computeDragRect, removeListeners} from './handlers';
 import {startHammer, stopHammer} from './hammer';
@@ -97,6 +98,14 @@ export default {
     const state = getState(chart);
     state.options = options;
     addListeners(chart, options);
+
+    const {updatedScaleLimits} = state;
+    each(chart.scales, function(scale) {
+      if (updatedScaleLimits[scale.id]) {
+        scale.options.min = updatedScaleLimits[scale.id].min;
+        scale.options.max = updatedScaleLimits[scale.id].max;
+      }
+    });
   },
 
   beforeDatasetsDraw(chart, _args, options) {
