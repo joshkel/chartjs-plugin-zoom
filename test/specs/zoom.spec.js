@@ -253,6 +253,53 @@ describe('zoom', function() {
         expect(scaleY.options.min).toBeCloseTo(1.1);
         expect(scaleY.options.max).toBeCloseTo(1.7);
       });
+
+      it('should do nothing for clicks outside the chart area', function() {
+        chart = window.acquireChart({
+          type: 'line',
+          data,
+          options: {
+            scales: {
+              xScale0: {
+                id: 'xScale0',
+                type: 'linear'
+              },
+              yScale0: {
+                id: 'yScale0',
+                type: 'linear'
+              }
+            },
+            plugins: {
+              zoom: {
+                zoom: {
+                  drag: {
+                    enabled: true
+                  },
+                  mode: 'x'
+                }
+              }
+            }
+          }
+        });
+
+        scaleX = chart.scales.xScale0;
+        scaleY = chart.scales.yScale0;
+
+        jasmine.triggerMouseEvent(chart, 'mousedown', {
+          x: chart.chartArea.top - 1,
+          y: chart.chartArea.left - 1
+        });
+        jasmine.triggerMouseEvent(chart, 'mouseup', {
+          x: chart.chartArea.top - 1,
+          y: chart.chartArea.left - 1
+        });
+
+        expect(scaleX.options.min).toBeUndefined();
+        expect(scaleX.options.max).toBeUndefined();
+        expect(scaleY.options.min).toBeUndefined();
+        expect(scaleY.options.max).toBeUndefined();
+        expect(chart.isZoomedOrPanned()).toBe(false);
+      });
     });
   });
 
