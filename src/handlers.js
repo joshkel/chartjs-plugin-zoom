@@ -3,6 +3,14 @@ import {zoom, zoomRect} from './core';
 import {callback as call, getRelativePosition, _isPointInArea} from 'chart.js/helpers';
 import {getState} from './state';
 
+/**
+ * @param {number} x
+ * @param {number} from
+ * @param {number} to
+ * @returns {number}
+ */
+const clamp = (x, from, to) => Math.min(to, Math.max(from, x));
+
 function removeHandler(chart, type) {
   const {handlers} = getState(chart);
   const handler = handlers[type];
@@ -96,13 +104,13 @@ export function computeDragRect(chart, mode, beginPointEvent, endPointEvent) {
   const endPoint = getPointPosition(endPointEvent, chart);
 
   if (xEnabled) {
-    left = Math.max(0, Math.min(beginPoint.x, endPoint.x));
-    right = Math.min(chart.width, Math.max(beginPoint.x, endPoint.x));
+    left = clamp(Math.min(beginPoint.x, endPoint.x), left, right);
+    right = clamp(Math.max(beginPoint.x, endPoint.x), left, right);
   }
 
   if (yEnabled) {
-    top = Math.max(0, Math.min(beginPoint.y, endPoint.y));
-    bottom = Math.min(chart.height, Math.max(beginPoint.y, endPoint.y));
+    top = clamp(Math.min(beginPoint.y, endPoint.y), top, bottom);
+    bottom = clamp(Math.max(beginPoint.y, endPoint.y), top, bottom);
   }
   const width = right - left;
   const height = bottom - top;
