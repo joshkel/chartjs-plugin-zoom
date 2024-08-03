@@ -26,8 +26,8 @@ jasmine.triggerWheelEvent = function(chart, init = {}) {
   node.dispatchEvent(event);
 };
 
-jasmine.dispatchEvent = function(chart, type, pt, init = {}) {
-  const node = chart.canvas;
+jasmine.dispatchEvent = function(chartOrNode, type, pt, init = {}) {
+  const node = 'canvas' in chartOrNode ? chartOrNode.canvas : chartOrNode;
   const rect = node.getBoundingClientRect();
   const event = new MouseEvent(type, Object.assign({}, init, {
     clientX: rect.left + pt.x,

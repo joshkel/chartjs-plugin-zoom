@@ -799,6 +799,49 @@ describe('zoom', function() {
         expect(zoomSpy).toHaveBeenCalled();
       });
 
+      fit('works within shadow DOM', function(done) {
+        const startSpy = jasmine.createSpy('start');
+        const zoomSpy = jasmine.createSpy('zoom');
+        const chart = window.acquireChart({
+          type: 'scatter',
+          data,
+          options: {
+            plugins: {
+              zoom: {
+                zoom: {
+                  drag: {
+                    enabled: true,
+                  },
+                  mode: 'xy',
+                  onZoomStart: startSpy,
+                  onZoom: zoomSpy,
+                  onZoomComplete: done
+                }
+              }
+            }
+          }
+        }, {
+          useShadowDOM: true
+        });
+
+        const pt = {
+          x: chart.scales.x.getPixelForValue(1.5),
+          y: chart.scales.y.getPixelForValue(1.5),
+        };
+        const pt2 = {
+          x: chart.scales.x.getPixelForValue(2.5),
+          y: chart.scales.y.getPixelForValue(2.5),
+        };
+
+        jasmine.dispatchEvent(chart, 'mousedown', pt);
+        jasmine.dispatchEvent(chart, 'mousemove', pt2);
+        jasmine.dispatchEvent(chart.canvas.getRootNode().host, 'mouseup', pt2);
+
+        expect(startSpy).toHaveBeenCalled();
+        expect(zoomSpy).toHaveBeenCalled();
+        expect(chart.getZoomLevel()).toEqual(2);
+      });
+
       it('should call onZoomRejected when onZoomStart returns false', function() {
         const zoomSpy = jasmine.createSpy('zoom');
         const rejectSpy = jasmine.createSpy('reject');
